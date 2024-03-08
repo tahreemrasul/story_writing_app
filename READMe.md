@@ -17,7 +17,7 @@ This repo contains the code for building a story writing app, using the Gemini P
    cd ./story_writing_app
   
 2. **Set Up a Conda Environment (Recommended)**
-* If you don't have Conda, install it first.
+If you don't have Conda, install it first.
 * Create a new Conda environment:
    ```bash
    conda create -n story_writing_app python=3.8
