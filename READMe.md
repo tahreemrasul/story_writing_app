@@ -1,8 +1,5 @@
-# Custom Chatbot using LangChain, OpenAI and Chainlit
+# Story Writing App using LangChain, Gemini Pro Text and Streamlit
 
-You can read further [here](https://medium.com/@tahreemrasul/how-to-build-your-own-chatbot-with-langchain-and-openai-f092822b6ba6), [here](https://medium.com/@tahreemrasul/building-a-chatbot-application-with-chainlit-and-langchain-3e86da0099a6) and [here](https://medium.com/@tahreemrasul/integrating-an-external-api-with-a-chatbot-application-using-langchain-and-chainlit-b687bb1efe58).
-
-## Overview
 ## Overview
 This repo contains the code for building a story writing app, using the Gemini Pro Text model and LangChain. Built using a Streamlit web service, the app can create custom stories based on user inputs.
 
