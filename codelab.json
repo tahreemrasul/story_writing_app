@@ -1,0 +1,24 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2024-03-08T21:15:10+05:00",
+  "id": "docs_genai",
+  "duration": 35,
+  "title": "Building Gemini Powered AI apps",
+  "authors": "Tahreem Rasul",
+  "summary": "Build and Deploy a CloudRun Streamlit Story Writing Application with Gemini Text Model",
+  "source": "build_with_genai.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "meta"
+  ],
+  "tags": [
+    "beginner"
+  ],
+  "url": "docs_genai"
+}

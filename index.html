@@ -1,0 +1,431 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Building Gemini Powered AI apps</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/claat-public/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14" ga4id=""></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  codelab-ga4id=""
+                  id="docs_genai"
+                  title="Building Gemini Powered AI apps"
+                  environment="web"
+                  feedback-link="">
+    
+      <google-codelab-step label="Overview" duration="10">
+        <h2 is-upgraded>Introduction</h2>
+<p>In this workshop, we will learn how to setup Google&#39;s Gemini Pro text model to build generative AI applications. This particular tutorial will focus on creating a story writing application using the Gemini Pro model. We will use the <a href="https://www.langchain.com" target="_blank">LangChain</a> framework to load our Gemini Pro text model, add  prompts and make calls to the model. LangChain offers great abstraction, allowing us to work with a wide variety of tools and language models, and takes care to development under the hood. We will also explore an alternative method in which models can be loaded directly from Google&#39;s <a href="https://cloud.google.com/vertex-ai" target="_blank">Vertex AI</a>.</p>
+<p>Next, we will create a web application using <a href="https://streamlit.io" target="_blank">Streamlit</a>. Streamlit is a Python library that simplifies building web apps for machine learning projects. It offers a straightforward way to create interactive UIs. We will be discussing how to get user data from our streamlit web app, and linking it to our Gemini Pro model. Streamlit offers different interactive elements to enhance your application, and get user input. We will also be discussing how we can deploy our application locally.</p>
+<p>Finally, we  will discuss how we can deploy our story writing application to <a href="https://cloud.google.com/run" target="_blank">Google Cloud Run</a> using a docker container. This will then allow your application to go online, and you can share it with other people.</p>
+<h2 is-upgraded>App Specifics</h2>
+<p>We will be building an application that writes a story based on specific information provided by a user. This information includes story length, character names, their personas, the story genre, where it is set etc. We will also encode other information into our prompt to control the level of creativity in the story generation process.</p>
+<p class="image-container"><img alt="alt text for screen readers" title="Process Diagram for Story Writing App" src="img/9fe5c3a86eded976.png"></p>
+<h3 is-upgraded>Here&#39;s what you&#39;ll learn</h3>
+<ul>
+<li>Setting up Cloud Run</li>
+<li>Configuring Gemini API Key</li>
+<li>LangChain&#39;s functionality for Gemini Models</li>
+<li>Building web applications using Streamlit</li>
+<li>Deploying applications on Google Cloud Run</li>
+</ul>
+<h2 is-upgraded>Here&#39;s what you need</h2>
+<ul>
+<li>Python 3.10 or above</li>
+<li>Google Account</li>
+<li>Google API Key</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Environment Setup" duration="15">
+        <p>The environment setup for this project comprises of a few key steps. These are detailed below.</p>
+<h2 is-upgraded>Create a Google Cloud project</h2>
+<aside class="special"><p><strong>Note:</strong> Make sure you have a working Google account before proceeding.</p>
+</aside>
+<p>A Google Cloud project organizes all your Google Cloud resources. It consists of a set of collaborators, enabled APIs (and other resources), monitoring tools, billing information, and authentication and access controls. When you create a new project, you will need to enter a <strong>Project Name</strong>, and you will have to link it to an existing <strong>Billing Account</strong> and <strong>Organization</strong>.</p>
+<ol type="1">
+<li>Sign-in to the <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a> and create a new project or reuse an existing one. If you don&#39;t already have a Gmail or Google Workspace account, you must <a href="https://accounts.google.com/lifecycle/steps/signup/name?dsh=S-1358542253:1709886508476597&flowEntry=SignUp&flowName=GlifWebSignIn&theme=glif&TL=ADg0xR16PCHMgx4lMG_glr-rDO51RQ2_9-NE1xrRJR1WXGze-GgzE8tbMrfG1xTd" target="_blank">create one</a>. <img alt="alt text for screen readers" title="Creating a Google Cloud Project" src="img/5d3c98c940adcbb2.png"></li>
+</ol>
+<ul>
+<li>The <strong>Project Name</strong> is the display name for this project&#39;s participants. It is a character string not used by Google APIs. You can always update it.</li>
+<li>The <strong>Project ID</strong> is unique across all Google Cloud projects and is immutable (cannot be changed after it has been set). The Cloud Console auto-generates a unique string; usually you don&#39;t care what it is.</li>
+</ul>
+<ol type="1" start="2">
+<li>Next, you&#39;ll need to <a href="https://console.cloud.google.com/billing" target="_blank">enable billing</a> in the Cloud Console to use Cloud resources/APIs. Running through this codelab won&#39;t cost much, if anything at all. To shut down resources to avoid incurring billing beyond this tutorial, you can delete the resources you created or delete the project. New Google Cloud users are eligible for the <a href="https://cloud.google.com/free?hl=en" target="_blank">$300 USD Free Trial program</a>.</li>
+</ol>
+<h2 is-upgraded>Obtain Gemini API Key</h2>
+<p>In order to build an application with Gemini Pro, you need to acquire an API key. This can be done with the <a href="https://aistudio.google.com/app/" target="_blank">Google MakerSuite</a>.</p>
+<ol type="1">
+<li>In the top left of the page you should see a <strong>Get API Key</strong> button. Click it. <img alt="alt text for screen readers" title="Google MakerSuite" src="img/bbd192585c5b2b76.png"></li>
+<li>Now click <strong>Create API Key in new project</strong>. Copy the API key and store in a safe place. <img alt="alt text for screen readers" title="Gemini API Key" src="img/27b4b4af780115f1.png"></li>
+<li>In your project folder, create a <code>.env</code> file and add your API Key as follows:</li>
+</ol>
+<pre><code language="language-python" class="language-python">GOOGLE_API_KEY=&#34;new_api_key_here&#34;
+</code></pre>
+<h2 is-upgraded>Conda/Python venv Setup</h2>
+<p>To start building our application, we need to install all the dependencies and libraries in a dedicated Python environment.</p>
+<aside class="special"><p><strong>Note:</strong> Make sure you have <code>Python>=3.10</code> installed in your system before proceeding. Follow either of the two options below to install dependencies.</p>
+</aside>
+<h3 is-upgraded>Option 1: Conda Environment</h3>
+<p>If you have <a href="https://www.anaconda.com/download" target="_blank">anaconda</a> installed in your system, you can create a conda environment through the following steps:</p>
+<ol type="1">
+<li>In a new command line terminal, create a conda environment as follows:</li>
+</ol>
+<pre><code language="language-shell" class="language-shell">conda create -n story_writing_app python=3.10
+</code></pre>
+<ol type="1" start="2">
+<li>Activate your environment:</li>
+</ol>
+<pre><code language="language-shell" class="language-shell">conda activate story_writing_app
+</code></pre>
+<ol type="1" start="3">
+<li>Install all dependencies:</li>
+</ol>
+<pre><code language="language-shell" class="language-shell">pip install langchain python-dotenv streamlit google-generativeai langchain-google-genai
+</code></pre>
+<h3 is-upgraded>Option 2: Python Virtual Environment</h3>
+<p>In case you do not have anaconda installed in your system, you can create a virtual Python environment by following these steps:</p>
+<ol type="1">
+<li>In a new command line terminal, create a virtual env as follows:</li>
+</ol>
+<pre><code language="language-shell" class="language-shell">python3 -m venv story_writing_app
+</code></pre>
+<ol type="1" start="2">
+<li>Activate your environment:</li>
+</ol>
+<pre><code language="language-shell" class="language-shell">source story_writing_app/bin/activate
+</code></pre>
+<ol type="1" start="3">
+<li>Install all dependencies:</li>
+</ol>
+<pre><code language="language-shell" class="language-shell">pip install langchain python-dotenv streamlit google-generativeai langchain-google-genai
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Setting up LangChain for Gemini Models" duration="10">
+        <p>To build a custom generative AI application, we typically need to define an instance of a large language model. In our case, this would be the Gemini Pro Text model. This model instance needs to be connected with a custom prompt, memory features to maintain context, callbacks for logging etc. <a href="https://www.langchain.com" target="_blank">LangChain</a> is a Python framework that abstracts a lot of these processes and makes generative AI development easier. We can also directly load the model through Google&#39;s <a href="https://cloud.google.com/vertex-ai" target="_blank">Vertex AI</a> API. However, for the scope of this tutorial, we will be focusing on using LangChain for all our LLM related development.</p>
+<h2 is-upgraded>Understanding LangChain</h2>
+<p>LangChain is an open-source Python  framework designed to streamline the integration of large language models (LLMs) into application development. By abstracting the complexities associated with different LLMs, LangChain allows developers to switch between models, promoting modularity and flexibility in application design. Some core features offered  by LangChain:</p>
+<ol type="1">
+<li><strong>Model Abstraction</strong>: LangChain abstracts the details of different language models, allowing developers to switch between models with minimal code changes.</li>
+<li><strong>Chain-Based Composition</strong>: It introduces the concept of <strong>chains</strong>, which are sequences of operations or transformations applied to text. This allows for modular design, where components like prompt engineering, response processing, and state management can be easily assembled and reused.</li>
+<li><strong>Prompt Engineering Support</strong>: LangChain provides tools for sophisticated prompt engineering, enabling developers to craft prompts that gather more accurate and contextually relevant responses from language models.</li>
+<li><strong>Agents and Tools</strong>: LangChain allows developers to integrate a large variety of tools for different tasks. An example of a tool is the online search tool provided by Wikipedia.</li>
+</ol>
+<p class="image-container"><img alt="alt text for screen readers" title="An Example App Utilizing LangChain features" src="img/ddc13014933b2580.jpeg"></p>
+<h2 is-upgraded>LangChain&#39;s <code>PromptTemplate</code></h2>
+<p>The <code>PromptTemplate</code> can be thought of as a wrapper around prompts, where you can specify the input variable, as well as any other key information. The prompt typically needs to be in a specific format for use inside LangChain. Let&#39;s begin by creating a prompt for our application.</p>
+<ol type="1">
+<li>Create a new python script in your directory and name it <code>prompts.py</code>.</li>
+<li>Import the <code>PromptTemplate</code> module from LangChain:</li>
+</ol>
+<pre><code language="language-python" class="language-python">from langchain.prompts import PromptTemplate
+</code></pre>
+<ol type="1" start="3">
+<li>Now, we will write a template for our story  writing application. We will include any data we expect from the user inside curly braces, and specify all instructions for our large language model:</li>
+</ol>
+<pre><code language="language-python" class="language-python">story_template = &#34;&#34;&#34;Write a {length_of_story} story based on the following premise: \n
+character_name: {character_name} \n
+character_type: {character_type} \n
+character_persona: {character_persona} \n
+character_location: {character_location} \n
+story_premise: {story_premise} \n
+If the story is &#34;short&#34;, then make sure to have 5 chapters or else if it is &#34;long&#34; then 10 chapters.
+Important point is that each chapters should be generated based on the premise given above.
+First start by giving the book introduction, chapter introductions and then each chapter. It should also have a 
+proper ending.
+The book should have prologue and epilogue.
+&#34;&#34;&#34;
+</code></pre>
+<ol type="1" start="4">
+<li>Next, we would need to add this to LangChain&#39;s <code>PromptTemplate</code>, that we imported previously. We also need to specify any input variables that our prompt is expecting:</li>
+</ol>
+<pre><code language="language-python" class="language-python">story_prompt = PromptTemplate(
+    input_variables=[&#34;length_of_story&#34;, &#34;character_name&#34;, &#34;character_type&#34;, &#34;character_persona&#34;, &#34;character_location&#34;,
+                     &#34;story_premise&#34;],
+    template=story_template
+)
+</code></pre>
+<ol type="1" start="5">
+<li>Finally, let&#39;s define a dictionary to store all user inputs. This would be required when we are making calls to our language model, and would ensure that correct values are passed against each input:</li>
+</ol>
+<pre><code language="language-python" class="language-python">prompt_formatted = {
+    &#34;length_of_story&#34;: length_of_story,
+    &#34;character_name&#34;: character_name,
+    &#34;character_type&#34;: character_type,
+    &#34;character_persona&#34;: character_persona,
+    &#34;character_location&#34;: character_location,
+    &#34;story_premise&#34;: story_premise
+}
+</code></pre>
+<h2 is-upgraded>Defining Gemini Pro Text Instance</h2>
+<p>We can create an instance of the Gemini Pro Text model with the <code>google-generativeai</code> and <code>langchain-google-genai</code> libraries that we installed in the beginning.</p>
+<ol type="1">
+<li>Create a new python script named <code>app.py</code> and import the necessary modules:</li>
+</ol>
+<pre><code language="language-python" class="language-python">from langchain_google_genai import ChatGoogleGenerativeAI
+</code></pre>
+<ol type="1" start="2">
+<li>Define an instance of the Gemini Pro Text model. For now, we can hard code some inputs, but we will customize these based on user input:</li>
+</ol>
+<pre><code language="language-python" class="language-python">temperature=0.3
+max_output_tokens=2048
+llm = ChatGoogleGenerativeAI(model=&#34;gemini-pro&#34;,
+                                 temperature=temperature,
+                                 max_output_tokens=max_output_tokens)
+</code></pre>
+<h2 is-upgraded>LangChain&#39;s <code>LLMChain</code></h2>
+<p>Chains are sequences of calls that help in interacting with language models more effectively. Chains in LangChain are designed to encode a sequence of calls to models, document retrievers, and other chains, providing a simplified interface. This makes working with language models easier and more versatile, especially when dealing with complex tasks. We&#39;ll be using the <code>LLMChain</code> which is a simple sequential chain for interacting with language  models.</p>
+<ol type="1">
+<li>Create a new python script named <code>app.py</code> and import the necessary modules:</li>
+</ol>
+<pre><code language="language-python" class="language-python">from langchain.chains import LLMChain
+from prompts import story_prompt, prompt_formatted
+</code></pre>
+<ol type="1" start="2">
+<li>Create a chain by specifying the language model, and the prompt that the model is expecting. We defined both of these previously:</li>
+</ol>
+<pre><code language="language-python" class="language-python">chain = LLMChain(llm=llm, prompt=story_prompt, verbose=True)
+</code></pre>
+<ol type="1" start="3">
+<li>The model can be called using the <code>invoke</code> method from the chain:</li>
+</ol>
+<pre><code language="language-python" class="language-python">response = chain.invoke(prompt_formatted)
+</code></pre>
+<h2 is-upgraded>Code Restructure</h2>
+<p>In your <code>app.py</code> script, add all import statements in the beginning:</p>
+<pre><code language="language-python" class="language-python">from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
+from dotenv import load_dotenv
+
+load_dotenv()
+</code></pre>
+<aside class="special"><p><strong>Note:</strong> When working with Python applications, it is good practice to add all import statements at the beginning</p>
+</aside>
+<p>We can create a function and add the code we defined previously to it:</p>
+<pre><code language="language-python" class="language-python">def get_gemini_pro_text_response(prompt, prompt_dict, config):
+    llm = ChatGoogleGenerativeAI(model=&#34;gemini-pro&#34;,
+                                 temperature=config[&#34;temperature&#34;],
+                                 max_output_tokens=config[&#34;max_output_tokens&#34;])
+    print(prompt)
+    chain = LLMChain(llm=llm, prompt=prompt, verbose=True)
+
+    response = chain.invoke(prompt_dict)
+    return response[&#34;text&#34;]
+</code></pre>
+<aside class="special"><p><strong>Note:</strong> It is good practice to add functions in your code, especially if it&#39;s reusable.</p>
+</aside>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Building Web Apps using Streamlit" duration="0">
+        <h2 is-upgraded>Understanding Streamlit</h2>
+<p><a href="https://streamlit.io" target="_blank">Streamlit</a> is an open-source Python library that simplifies the process of creating and deploying interactive and attractive web applications for machine learning and data science projects. It is designed to turn data scripts into shareable web apps in just a few lines of code, without the need for extensive web development experience. Streamlit&#39;s straightforward API allows developers to create widgets, charts, and visuals with minimal coding, making it highly accessible to data scientists and engineers.</p>
+<p class="image-container"><img alt="alt text for screen readers" title="Story Writing App Frontend" src="img/c919becca545f878.png"></p>
+<h2 is-upgraded>Streamlit elements</h2>
+<p>We would be using some Streamlit elements and widgets. Following is an explanation of each of these:</p>
+<ol type="1">
+<li><code>st.write("")</code> - Display a message.</li>
+<li><code>st.header("")</code> - Display a main header.</li>
+<li><code>st.subheader("")</code> - Display a subheader.</li>
+<li><code>st.text_input("")</code> - Input field for text, can have a default.</li>
+<li><code>st.multiselect("")</code> - Multiple selection for input, can have default(s).</li>
+<li><code>st.radio("")</code> - Set of radio buttons for users to select from.</li>
+<li><code>st.button("")</code> - Button to trigger an action at backend.</li>
+<li><code>st.spinner</code> - Widget to show a loading animation while the story is being generated.</li>
+<li><code>st.tabs</code> to create tabs for displaying content</li>
+</ol>
+<h2 is-upgraded>Application Logic</h2>
+<ol type="1">
+<li>In your <code>app.py</code> script, import your streamlit library:</li>
+</ol>
+<pre><code language="language-python" class="language-python">import streamlit  as st
+</code></pre>
+<ol type="1" start="2">
+<li>Define the following elements to give your application a title:</li>
+</ol>
+<pre><code language="language-python" class="language-python">st.write(&#34;Using Gemini 1.0 Pro - Text only model&#34;)
+st.header(&#34;Story Writing App&#34;)
+st.subheader(&#34;Generate a story&#34;)
+</code></pre>
+<ol type="1" start="3">
+<li>Next, add the following logic for getting the user inputs we encoded previously in our prompt and our model is expecting:</li>
+</ol>
+<pre><code language="language-python" class="language-python">character_name = st.text_input(
+    &#34;Enter character name: \n\n&#34;, key=&#34;character_name&#34;, value=&#34;Mittens&#34;
+)
+character_type = st.text_input(
+    &#34;What type of character is it? \n\n&#34;, key=&#34;character_type&#34;, value=&#34;Cat&#34;
+)
+character_persona = st.text_input(
+    &#34;What personality does the character have? \n\n&#34;,
+    key=&#34;character_persona&#34;,
+    value=&#34;Mitten is a very friendly cat.&#34;,
+)
+character_location = st.text_input(
+    &#34;Where does the character live? \n\n&#34;,
+    key=&#34;character_location&#34;,
+    value=&#34;Andromeda Galaxy&#34;,
+)
+story_premise = st.multiselect(
+    &#34;What is the story premise? (can select multiple) \n\n&#34;,
+    [
+        &#34;Love&#34;,
+        &#34;Adventure&#34;,
+        &#34;Mystery&#34;,
+        &#34;Horror&#34;,
+        &#34;Comedy&#34;,
+        &#34;Sci-Fi&#34;,
+        &#34;Fantasy&#34;,
+        &#34;Thriller&#34;,
+    ],
+    key=&#34;story_premise&#34;,
+    default=[&#34;Love&#34;, &#34;Adventure&#34;],
+)
+creative_control = st.radio(
+    &#34;Select the creativity level: \n\n&#34;,
+    [&#34;Low&#34;, &#34;High&#34;],
+    key=&#34;creative_control&#34;,
+    horizontal=True,
+)
+length_of_story = st.radio(
+    &#34;Select the length of the story: \n\n&#34;,
+    [&#34;Short&#34;, &#34;Long&#34;],
+    key=&#34;length_of_story&#34;,
+    horizontal=True,
+)
+</code></pre>
+<ol type="1" start="4">
+<li>Add logic for setting temperature and output tokens based on user input. This can be done as follows:</li>
+</ol>
+<pre><code language="language-python" class="language-python">if creative_control == &#34;Low&#34;:
+    temperature = 0.30
+else:
+    temperature = 0.95
+
+if length_of_story == &#34;Short&#34;:
+    max_output_tokens = 1000
+else:
+    temperature = 2048
+</code></pre>
+<ol type="1" start="5">
+<li>Finally, let&#39;s define the logic to invoke our chain once the user clicks on the <strong>Generate my story</strong> button:</li>
+</ol>
+<pre><code language="language-python" class="language-python">generate_t2t = st.button(&#34;Generate my story&#34;, key=&#34;generate_t2t&#34;)
+if generate_t2t and story_prompt:
+    with st.spinner(&#34;Generating your story using Gemini 1.0 Pro ...&#34;):
+        first_tab1, first_tab2 = st.tabs([&#34;Story&#34;, &#34;Prompt&#34;])
+        with first_tab1:
+            response = get_gemini_pro_text_response(story_prompt, prompt_formatted, config)
+            if response:
+                st.write(&#34;Your story:&#34;)
+                st.write(response)
+        with first_tab2:
+            st.text(story_prompt)
+</code></pre>
+<h2 is-upgraded>Deploying Streamlit app locally</h2>
+<p>Our application logic is now complete. To deploy the application locally, run this from the main project directory:</p>
+<pre><code language="language-shell" class="language-shell">streamlit run app.py
+</code></pre>
+<p>The application will be up and running in your default browser.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Deploying application to Cloud Run" duration="0">
+        <p><a href="https://cloud.google.com/run" target="_blank">Cloud Run</a> in GCP is a managed compute platform that lets you run containers directly on top of Google&#39;s scalable infrastructure. You can deploy code written in any programming language on Cloud Run if you can build a container image from it. In the next few steps, we will learn how to do this.</p>
+<h2 is-upgraded>Creating a <code>requirements.txt</code></h2>
+<p>Create a <code>requirements.txt</code> file in your project directory, and add all the necessary packages to it:</p>
+<pre><code language="language-text" class="language-text">langchain
+python-dotenv
+streamlit
+google-generativeai
+langchain-google-genai
+</code></pre>
+<h2 is-upgraded>Creating a <code>Dockerfile</code></h2>
+<p>Create a Dockerfile in your directory and add the following code to it:</p>
+<pre><code language="language-doctest" class="language-doctest"># Use an official Python runtime as a parent image
+FROM python:3.11
+# Set the working directory in the container to /app
+WORKDIR /app
+# Copy the current directory contents into the container at /app
+COPY . /app
+# Install any needed packages specified in requirements.txt
+RUN pip install -r requirements.txt
+# Make port 8080 available to the world outside this container
+EXPOSE 8080
+# Run app.py when the container launches using streamlit
+CMD [&#34;streamlit&#34;, &#34;run&#34;, &#34;app.py&#34;, &#34;--server.port=8080&#34;, &#34;--server.address=0.0.0.0&#34;]
+</code></pre>
+<h2 is-upgraded>Deployment</h2>
+<p>We will be carrying out deployment through the Google Cloud CLI tool. Make sure you have this <a href="https://cloud.google.com/sdk/docs/install" target="_blank">installed</a>.</p>
+<ol type="1">
+<li>Get a list of all <code>gcloud</code> projects using:</li>
+</ol>
+<pre><code language="language-shell" class="language-shell">gcloud projects list
+</code></pre>
+<ol type="1" start="2">
+<li>To ensure the current project is the same as the one we will do our deployment in, type the following command: Replace <code>$MY_PROJECT_ID</code> with the name of your project.</li>
+</ol>
+<pre><code language="language-shell" class="language-shell">gcloud config set project $MY_PROJECT_ID
+</code></pre>
+<ol type="1" start="3">
+<li>We need to first build our docker image. The command below initiates the process of building a container image using Google Cloud Build and then pushes this image to the Google Container Registry (gcr.io) with the specified tag <code>PROJECT_ID/image_name</code>. You can give your image any name of your liking. Use the following command to build your docker image:</li>
+</ol>
+<pre><code language="language-shell" class="language-shell">gcloud builds submit --tag gcr.io/PROJECT_ID/image_name .
+</code></pre>
+<ol type="1" start="4">
+<li>Once your image has been built successfully, type the following command. Replace <code>SERVICE</code> with what you want to call your service. Once the command executes successfully, it should return a URL.</li>
+</ol>
+<pre><code language="language-shell" class="language-shell">gcloud run deploy SERVICE --region us-central1 --allow-unauthenticated --image gcr.io/PROJECT_ID/image_name
+</code></pre>
+<aside class="special"><p><strong>Note:</strong> Successful deployment should return a URL where your application is live.</p>
+</aside>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Further Enhancements" duration="0">
+        <p>To elevate the Story Writing App and broaden its appeal, integrating advanced Natural Language Processing (NLP) and vision models could be transformative. Enhancing the app with more sophisticated NLP capabilities would significantly improve the quality, creativity, and coherence of the generated stories. For instance, implementing a feature that uses sentiment analysis could allow the app to adjust the tone of the story based on user preferences, making each story more personalized and engaging. On the other hand, integrating Gemini Pro Vision would open up new interactive possibilities, such as generating visual content based on the text of the stories. This integration would not only make the storytelling experience more immersive but also attract users interested in the visual aspects of storytelling.</p>
+<p>Further enhancements could focus on improving the user experience through a more interactive and intuitive UI/UX, implementing real-time collaboration features for community-driven story development, and adding support for multiple languages to cater to a global audience. Additionally, exploring the educational potential of the app by introducing features tailored for learning and teaching narrative skills could expand its user base. Such features could include structured writing prompts, feedback mechanisms, and integration with educational platforms.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Discussion and Resources" duration="0">
+        <p>The code for the tutorial and this codelab can be accessed here: <img alt="alt text for screen readers" title="Story Writing App Frontend" src="img/70678a1641bd4fb8.jpeg"></p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/claat-public/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/prettify.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
