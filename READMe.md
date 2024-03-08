@@ -45,7 +45,7 @@ To run the application, simply execute the `app.py` script:
 ## Running in GCP Cloud Run
 Cloud Run in GCP is a managed compute platform that lets you run containers directly on top of Google's 
 scalable infrastructure. You can run on GCP using either the source code or through the Dockerfile. For running with 
-source code, use:
+Dockerfile, use:
 ```shell
 gcloud builds submit --tag gcr.io/PROJECT_ID/image_name .
 gcloud run deploy SERVICE --region us-central1 --allow-unauthenticated --image gcr.io/PROJECT_ID/image_name
