@@ -28,7 +28,7 @@
                   environment="web"
                   feedback-link="">
     
-      <google-codelab-step label="Overview" duration="10">
+      <google-codelab-step label="Overview" duration="15">
         <h2 is-upgraded>Introduction</h2>
 <p>In this workshop, we will learn how to setup Google&#39;s Gemini Pro text model to build generative AI applications. This particular tutorial will focus on creating a story writing application using the Gemini Pro model. We will use the <a href="https://www.langchain.com" target="_blank">LangChain</a> framework to load our Gemini Pro text model, add  prompts and make calls to the model. LangChain offers great abstraction, allowing us to work with a wide variety of tools and language models, and takes care to development under the hood. We will also explore an alternative method in which models can be loaded directly from Google&#39;s <a href="https://cloud.google.com/vertex-ai" target="_blank">Vertex AI</a>.</p>
 <p>Next, we will create a web application using <a href="https://streamlit.io" target="_blank">Streamlit</a>. Streamlit is a Python library that simplifies building web apps for machine learning projects. It offers a straightforward way to create interactive UIs. We will be discussing how to get user data from our streamlit web app, and linking it to our Gemini Pro model. Streamlit offers different interactive elements to enhance your application, and get user input. We will also be discussing how we can deploy our application locally.</p>
@@ -121,7 +121,7 @@
 
       </google-codelab-step>
     
-      <google-codelab-step label="Setting up LangChain for Gemini Models" duration="10">
+      <google-codelab-step label="Setting up LangChain for Gemini Models" duration="15">
         <p>To build a custom generative AI application, we typically need to define an instance of a large language model. In our case, this would be the Gemini Pro Text model. This model instance needs to be connected with a custom prompt, memory features to maintain context, callbacks for logging etc. <a href="https://www.langchain.com" target="_blank">LangChain</a> is a Python framework that abstracts a lot of these processes and makes generative AI development easier. We can also directly load the model through Google&#39;s <a href="https://cloud.google.com/vertex-ai" target="_blank">Vertex AI</a> API. However, for the scope of this tutorial, we will be focusing on using LangChain for all our LLM related development.</p>
 <h2 is-upgraded>Understanding LangChain</h2>
 <p>LangChain is an open-source Python  framework designed to streamline the integration of large language models (LLMs) into application development. By abstracting the complexities associated with different LLMs, LangChain allows developers to switch between models, promoting modularity and flexibility in application design. Some core features offered  by LangChain:</p>
@@ -239,7 +239,7 @@ load_dotenv()
 
       </google-codelab-step>
     
-      <google-codelab-step label="Building Web Apps using Streamlit" duration="0">
+      <google-codelab-step label="Building Web Apps using Streamlit" duration="15">
         <h2 is-upgraded>Understanding Streamlit</h2>
 <p><a href="https://streamlit.io" target="_blank">Streamlit</a> is an open-source Python library that simplifies the process of creating and deploying interactive and attractive web applications for machine learning and data science projects. It is designed to turn data scripts into shareable web apps in just a few lines of code, without the need for extensive web development experience. Streamlit&#39;s straightforward API allows developers to create widgets, charts, and visuals with minimal coding, making it highly accessible to data scientists and engineers.</p>
 <p class="image-container"><img alt="alt text for screen readers" title="Story Writing App Frontend" src="img/c919becca545f878.png"></p>
@@ -353,7 +353,7 @@ if generate_t2t and story_prompt:
 
       </google-codelab-step>
     
-      <google-codelab-step label="Deploying application to Cloud Run" duration="0">
+      <google-codelab-step label="Deploying application to Cloud Run" duration="15">
         <p><a href="https://cloud.google.com/run" target="_blank">Cloud Run</a> in GCP is a managed compute platform that lets you run containers directly on top of Google&#39;s scalable infrastructure. You can deploy code written in any programming language on Cloud Run if you can build a container image from it. In the next few steps, we will learn how to do this.</p>
 <h2 is-upgraded>Creating a <code>requirements.txt</code></h2>
 <p>Create a <code>requirements.txt</code> file in your project directory, and add all the necessary packages to it:</p>
@@ -406,14 +406,14 @@ CMD [&#34;streamlit&#34;, &#34;run&#34;, &#34;app.py&#34;, &#34;--server.port=80
 
       </google-codelab-step>
     
-      <google-codelab-step label="Further Enhancements" duration="0">
+      <google-codelab-step label="Further Enhancements" duration="5">
         <p>To elevate the Story Writing App and broaden its appeal, integrating advanced Natural Language Processing (NLP) and vision models could be transformative. Enhancing the app with more sophisticated NLP capabilities would significantly improve the quality, creativity, and coherence of the generated stories. For instance, implementing a feature that uses sentiment analysis could allow the app to adjust the tone of the story based on user preferences, making each story more personalized and engaging. On the other hand, integrating Gemini Pro Vision would open up new interactive possibilities, such as generating visual content based on the text of the stories. This integration would not only make the storytelling experience more immersive but also attract users interested in the visual aspects of storytelling.</p>
 <p>Further enhancements could focus on improving the user experience through a more interactive and intuitive UI/UX, implementing real-time collaboration features for community-driven story development, and adding support for multiple languages to cater to a global audience. Additionally, exploring the educational potential of the app by introducing features tailored for learning and teaching narrative skills could expand its user base. Such features could include structured writing prompts, feedback mechanisms, and integration with educational platforms.</p>
 
 
       </google-codelab-step>
     
-      <google-codelab-step label="Discussion and Resources" duration="0">
+      <google-codelab-step label="Discussion and Resources" duration="5">
         <p>The code for the tutorial and this codelab can be accessed here: <img alt="alt text for screen readers" title="Story Writing App Frontend" src="img/70678a1641bd4fb8.jpeg"></p>
 
 
